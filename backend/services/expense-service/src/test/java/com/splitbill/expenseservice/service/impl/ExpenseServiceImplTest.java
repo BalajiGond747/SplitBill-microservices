@@ -8,6 +8,7 @@ import com.splitbill.expenseservice.entity.Expense;
 import com.splitbill.expenseservice.entity.ExpenseSplit;
 import com.splitbill.expenseservice.exception.ResourceNotFoundException;
 import com.splitbill.expenseservice.mappers.ExpenseMapper;
+import com.splitbill.expenseservice.messaging.ExpenseEventProducer;
 import com.splitbill.expenseservice.repository.ExpenseRepository;
 import com.splitbill.expenseservice.repository.ExpenseSplitRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,6 +18,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.*;
+import com.splitbill.expenseservice.messaging.ExpenseEventProducer;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -41,6 +43,9 @@ class ExpenseServiceImplTest {
 
     @InjectMocks
     private ExpenseServiceImpl expenseService;
+
+    @Mock
+    private ExpenseEventProducer expenseEventProducer;
 
     private Expense expense;
     private ExpenseResponse expenseResponse;

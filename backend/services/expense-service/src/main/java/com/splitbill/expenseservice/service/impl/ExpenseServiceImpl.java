@@ -7,8 +7,11 @@ import com.splitbill.expenseservice.dto.response.ExpenseResponse;
 import com.splitbill.expenseservice.dto.response.PageResponse;
 import com.splitbill.expenseservice.entity.Expense;
 import com.splitbill.expenseservice.entity.ExpenseSplit;
+import com.splitbill.expenseservice.event.ExpenseEvent;
+import com.splitbill.expenseservice.event.ExpenseSplitEvent;
 import com.splitbill.expenseservice.exception.ResourceNotFoundException;
 import com.splitbill.expenseservice.mappers.ExpenseMapper;
+import com.splitbill.expenseservice.messaging.ExpenseEventProducer;
 import com.splitbill.expenseservice.repository.ExpenseRepository;
 import com.splitbill.expenseservice.repository.ExpenseSplitRepository;
 import com.splitbill.expenseservice.service.ExpenseService;
@@ -32,6 +35,7 @@ public class ExpenseServiceImpl implements ExpenseService {
     private final ExpenseRepository expenseRepository;
     private final ExpenseSplitRepository expenseSplitRepository;
     private final ExpenseMapper expenseMapper;
+    private final ExpenseEventProducer expenseEventProducer;
 
     @Override
     @Transactional
@@ -41,8 +45,9 @@ public class ExpenseServiceImpl implements ExpenseService {
 
         Expense expense = expenseMapper.toEntity(request);
         Expense savedExpense = expenseRepository.save(expense);
-
         saveSplits(savedExpense.getId(), request.getSplits());
+
+        expenseEventProducer.publish(buildExpenseEvent(ExpenseEvent.EventType.EXPENSE_CREATED, savedExpense));
 
         return buildResponse(savedExpense);
     }
@@ -72,18 +77,20 @@ public class ExpenseServiceImpl implements ExpenseService {
         expenseMapper.updateEntity(expense, request);
 
         Expense updatedExpense = expenseRepository.save(expense);
-
         expenseSplitRepository.deleteByExpenseId(id);
-
         saveSplits(id, request.getSplits());
+
+        expenseEventProducer.publish(buildExpenseEvent(ExpenseEvent.EventType.EXPENSE_UPDATED, updatedExpense));
 
         return buildResponse(updatedExpense);
     }
 
-    @Override
     @Transactional
     public void deleteExpense(Long id) {
         Expense expense = findExpenseById(id);
+
+        expenseEventProducer.publish(buildExpenseEvent(ExpenseEvent.EventType.EXPENSE_DELETED, expense));
+
         expenseRepository.delete(expense);
     }
 
@@ -169,19 +176,6 @@ public class ExpenseServiceImpl implements ExpenseService {
         }
     }
 
-    private Expense.SplitType parseSplitType(String splitType) {
-
-        if (splitType == null || splitType.isBlank()) {
-            return null;
-        }
-
-        try {
-            return Expense.SplitType.valueOf(splitType.toUpperCase());
-        } catch (IllegalArgumentException ex) {
-            throw new IllegalArgumentException("Invalid split type: " + splitType);
-        }
-    }
-
     private Pageable createPageable(int page, int size, String sortBy, String sortDirection) {
         Sort.Direction direction = Sort.Direction.fromString(sortDirection);
 
@@ -197,5 +191,26 @@ public class ExpenseServiceImpl implements ExpenseService {
                 .toList();
 
         return new PageResponse<>(content, expensePage.getNumber(), expensePage.getSize(), expensePage.getTotalElements(), expensePage.getTotalPages(), expensePage.isFirst(), expensePage.isLast());
+    }
+
+    private ExpenseEvent buildExpenseEvent(ExpenseEvent.EventType eventType, Expense expense) {
+        List<ExpenseSplitEvent> splitEvents = expenseSplitRepository.findByExpenseId(expense.getId())
+                .stream()
+                .map(split -> ExpenseSplitEvent.builder()
+                        .userId(split.getUserId())
+                        .amount(split.getAmount())
+                        .percentage(split.getPercentage())
+                        .build())
+                .toList();
+
+        return ExpenseEvent.builder()
+                .eventType(eventType)
+                .expenseId(expense.getId())
+                .groupId(expense.getGroupId())
+                .paidBy(expense.getPaidBy())
+                .amount(expense.getAmount())
+                .splitType(expense.getSplitType())
+                .splits(splitEvents)
+                .build();
     }
 }

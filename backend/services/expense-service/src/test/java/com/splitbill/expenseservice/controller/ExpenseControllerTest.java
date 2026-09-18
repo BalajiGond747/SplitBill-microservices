@@ -6,6 +6,7 @@ import com.splitbill.expenseservice.dto.response.ExpenseResponse;
 import com.splitbill.expenseservice.dto.response.PageResponse;
 import com.splitbill.expenseservice.entity.Expense;
 import com.splitbill.expenseservice.exception.ResourceNotFoundException;
+import com.splitbill.expenseservice.messaging.ExpenseEventProducer;
 import com.splitbill.expenseservice.service.ExpenseService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.splitbill.expenseservice.messaging.ExpenseEventProducer;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+
 @WebMvcTest(controllers = ExpenseController.class)
 class ExpenseControllerTest {
 
@@ -37,6 +41,9 @@ class ExpenseControllerTest {
 
     @MockitoBean
     private ExpenseService expenseService;
+
+    @MockitoBean
+    private ExpenseEventProducer expenseEventProducer;
 
     @Test
     void createExpense_shouldReturn201() throws Exception {
