@@ -31,6 +31,8 @@ public class ExpenseEvent {
 
     private List<ExpenseSplitEvent> splits;
 
+    private List<ExpenseSplitEvent> previousSplits;
+
     public enum EventType {
         EXPENSE_CREATED,
         EXPENSE_UPDATED,

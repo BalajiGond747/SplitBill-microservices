@@ -74,13 +74,28 @@ public class ExpenseServiceImpl implements ExpenseService {
 
         Expense expense = findExpenseById(id);
 
+        List<ExpenseSplitEvent> previousSplits = expenseSplitRepository.findByExpenseId(id)
+                .stream()
+                .map(split -> ExpenseSplitEvent.builder()
+                        .userId(split.getUserId())
+                        .amount(split.getAmount())
+                        .percentage(split.getPercentage())
+                        .build())
+                .toList();
+
         expenseMapper.updateEntity(expense, request);
 
         Expense updatedExpense = expenseRepository.save(expense);
+
         expenseSplitRepository.deleteByExpenseId(id);
+
         saveSplits(id, request.getSplits());
 
-        expenseEventProducer.publish(buildExpenseEvent(ExpenseEvent.EventType.EXPENSE_UPDATED, updatedExpense));
+        ExpenseEvent event = buildExpenseEvent(ExpenseEvent.EventType.EXPENSE_UPDATED, updatedExpense);
+
+        event.setPreviousSplits(previousSplits);
+
+        expenseEventProducer.publish(event);
 
         return buildResponse(updatedExpense);
     }
