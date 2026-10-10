@@ -62,4 +62,20 @@ public class UserController {
 
         return ResponseEntity.ok(ApiResponse.success("User deactivated successfully", null));
     }
+
+    @GetMapping("/username/{username}")
+    public ResponseEntity<ApiResponse<UserResponse>> getUserByUsername(@PathVariable String username) {
+
+        UserResponse response = userService.getUserByUsername(username);
+
+        return ResponseEntity.ok(ApiResponse.success("User fetched successfully", response));
+    }
+
+    @GetMapping("/email/{email}")
+    public ResponseEntity<ApiResponse<UserResponse>> getUserByEmail(@PathVariable String email) {
+
+        UserResponse response = userService.getUserByEmail(email);
+
+        return ResponseEntity.ok(ApiResponse.success("User fetched successfully", response));
+    }
 }

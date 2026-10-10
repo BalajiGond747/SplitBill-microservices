@@ -1,4 +1,4 @@
-package com.splitbill.settlementservice.dto.response;
+package com.splitbill.paymentservice.dto.response;
 
 import lombok.*;
 

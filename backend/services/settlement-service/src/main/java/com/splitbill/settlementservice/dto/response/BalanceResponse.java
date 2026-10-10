@@ -3,14 +3,13 @@ package com.splitbill.settlementservice.dto.response;
 import lombok.*;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class SettlementResponse {
+public class BalanceResponse {
 
     private Long id;
 
@@ -21,12 +20,4 @@ public class SettlementResponse {
     private Long toUserId;
 
     private BigDecimal amount;
-
-    private String status;
-
-    private String paymentId;
-
-    private LocalDateTime createdAt;
-
-    private LocalDateTime updatedAt;
 }

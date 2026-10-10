@@ -8,26 +8,23 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "expense_groups", indexes = {@Index(name = "idx_groups_created_by", columnList = "created_by"), @Index(name = "idx_groups_active", columnList = "active")})
+@Table(name = "group_participants", uniqueConstraints = {@UniqueConstraint(name = "uk_group_participant_group_user", columnNames = {"group_id", "user_id"})}, indexes = {@Index(name = "idx_group_participants_group", columnList = "group_id"), @Index(name = "idx_group_participants_user", columnList = "user_id")})
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Group {
+public class GroupParticipant {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 100)
-    private String name;
+    @Column(name = "group_id", nullable = false)
+    private Long groupId;
 
-    @Column(length = 500)
-    private String description;
-
-    @Column(name = "created_by", nullable = false)
-    private Long createdBy;
+    @Column(name = "user_id", nullable = false)
+    private Long userId;
 
     @Builder.Default
     @Column(nullable = false)

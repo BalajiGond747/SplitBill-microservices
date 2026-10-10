@@ -1,11 +1,9 @@
 package com.splitbill.settlementservice.controller;
 
 import com.splitbill.settlementservice.dto.request.SettlementCreateRequest;
-import com.splitbill.settlementservice.dto.response.ApiResponse;
 import com.splitbill.settlementservice.dto.response.SettlementResponse;
 import com.splitbill.settlementservice.service.SettlementService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,29 +19,29 @@ public class SettlementController {
     private final SettlementService settlementService;
 
     @PostMapping
-    public ResponseEntity<ApiResponse<SettlementResponse>> createSettlement(@Valid @RequestBody SettlementCreateRequest request) {
-
-        SettlementResponse response = settlementService.createSettlement(request);
-
+    public ResponseEntity<SettlementResponse> createSettlement(@Valid @RequestBody SettlementCreateRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.success("Settlement created successfully", response));
+                .body(settlementService.createSettlement(request));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<SettlementResponse>> getSettlementById(@PathVariable @Positive(message = "Settlement id must be positive") Long id) {
-
-        return ResponseEntity.ok(ApiResponse.success(settlementService.getSettlementById(id)));
-    }
-
-    @GetMapping("/group/{groupId}")
-    public ResponseEntity<ApiResponse<List<SettlementResponse>>> getSettlementsByGroup(@PathVariable @Positive(message = "Group id must be positive") Long groupId) {
-
-        return ResponseEntity.ok(ApiResponse.success(settlementService.getSettlementsByGroup(groupId)));
+    public ResponseEntity<SettlementResponse> getSettlement(@PathVariable Long id) {
+        return ResponseEntity.ok(settlementService.getSettlement(id));
     }
 
     @GetMapping("/user/{userId}")
-    public ResponseEntity<ApiResponse<List<SettlementResponse>>> getSettlementsByUser(@PathVariable @Positive(message = "User id must be positive") Long userId) {
+    public ResponseEntity<List<SettlementResponse>> getUserSettlements(@PathVariable Long userId) {
+        return ResponseEntity.ok(settlementService.getUserSettlements(userId));
+    }
 
-        return ResponseEntity.ok(ApiResponse.success(settlementService.getSettlementsByUser(userId)));
+    @GetMapping("/group/{groupId}")
+    public ResponseEntity<List<SettlementResponse>> getGroupSettlements(@PathVariable Long groupId) {
+        return ResponseEntity.ok(settlementService.getGroupSettlements(groupId));
+    }
+
+
+    @PostMapping("/{id}/complete")
+    public ResponseEntity<SettlementResponse> completeSettlement(@PathVariable Long id) {
+        return ResponseEntity.ok(settlementService.completeSettlement(id));
     }
 }

@@ -12,13 +12,13 @@ public interface UserService {
 
     UserResponse getUserById(Long id);
 
-    PageResponse<UserResponse> getUsers(
-            String name,
-            Boolean active,
-            Pageable pageable
-    );
+    PageResponse<UserResponse> getUsers(String name, Boolean active, Pageable pageable);
 
     UserResponse updateUser(Long id, UserUpdateRequest request);
 
     void deactivateUser(Long id);
+
+    UserResponse getUserByUsername(String username);
+
+    UserResponse getUserByEmail(String email);
 }

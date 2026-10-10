@@ -8,14 +8,16 @@ import org.springframework.stereotype.Component;
 public class SettlementMapper {
 
     public SettlementResponse toResponse(Settlement settlement) {
+
         return SettlementResponse.builder()
                 .id(settlement.getId())
                 .groupId(settlement.getGroupId())
                 .fromUserId(settlement.getFromUserId())
                 .toUserId(settlement.getToUserId())
                 .amount(settlement.getAmount())
-                .settlementDate(settlement.getSettlementDate())
-                .note(settlement.getNote())
+                .status(settlement.getStatus() == null ? null : settlement.getStatus()
+                        .name())
+                .paymentId(settlement.getPaymentId())
                 .createdAt(settlement.getCreatedAt())
                 .updatedAt(settlement.getUpdatedAt())
                 .build();

@@ -35,8 +35,7 @@ class SettlementControllerTest {
                 .amount(new BigDecimal("500.00"))
                 .build();
 
-        when(settlementService.getSettlementById(1L))
-                .thenReturn(response);
+        when(settlementService.getSettlement(1L)).thenReturn(response);
 
         mockMvc.perform(get("/api/v1/settlements/1"))
                 .andExpect(status().isOk());
@@ -45,8 +44,7 @@ class SettlementControllerTest {
     @Test
     void getSettlementsByGroup_shouldReturn200() throws Exception {
 
-        when(settlementService.getSettlementsByGroup(1L))
-                .thenReturn(List.of());
+        when(settlementService.getGroupSettlements(1L)).thenReturn(List.of());
 
         mockMvc.perform(get("/api/v1/settlements/group/1"))
                 .andExpect(status().isOk());
@@ -55,8 +53,7 @@ class SettlementControllerTest {
     @Test
     void getSettlementsByUser_shouldReturn200() throws Exception {
 
-        when(settlementService.getSettlementsByUser(1L))
-                .thenReturn(List.of());
+        when(settlementService.getUserSettlements(1L)).thenReturn(List.of());
 
         mockMvc.perform(get("/api/v1/settlements/user/1"))
                 .andExpect(status().isOk());

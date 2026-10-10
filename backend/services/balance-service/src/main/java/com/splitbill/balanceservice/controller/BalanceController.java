@@ -1,15 +1,14 @@
 package com.splitbill.balanceservice.controller;
 
+import com.splitbill.balanceservice.dto.request.BalanceSettlementRequest;
 import com.splitbill.balanceservice.dto.response.ApiResponse;
 import com.splitbill.balanceservice.dto.response.BalanceResponse;
 import com.splitbill.balanceservice.service.BalanceService;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -22,15 +21,21 @@ public class BalanceController {
 
     @GetMapping("/group/{groupId}")
     public ResponseEntity<ApiResponse<List<BalanceResponse>>> getBalancesByGroup(@PathVariable @Positive(message = "Group id must be positive") Long groupId) {
-        List<BalanceResponse> response = balanceService.getBalancesByGroup(groupId);
-
-        return ResponseEntity.ok(ApiResponse.success(response));
+        return ResponseEntity.ok(ApiResponse.success(balanceService.getBalancesByGroup(groupId)));
     }
 
     @GetMapping("/user/{userId}")
     public ResponseEntity<ApiResponse<List<BalanceResponse>>> getBalancesByUser(@PathVariable @Positive(message = "User id must be positive") Long userId) {
-        List<BalanceResponse> response = balanceService.getBalancesByUser(userId);
+        return ResponseEntity.ok(ApiResponse.success(balanceService.getBalancesByUser(userId)));
+    }
 
-        return ResponseEntity.ok(ApiResponse.success(response));
+    @GetMapping("/internal/group/{groupId}/from/{fromUserId}/to/{toUserId}")
+    public BalanceResponse getBalanceForSettlement(@PathVariable Long groupId, @PathVariable Long fromUserId, @PathVariable Long toUserId) {
+        return balanceService.getBalance(groupId, fromUserId, toUserId);
+    }
+
+    @PostMapping("/internal/settle")
+    public BalanceResponse settleBalance(@Valid @RequestBody BalanceSettlementRequest request) {
+        return balanceService.settleBalance(request);
     }
 }

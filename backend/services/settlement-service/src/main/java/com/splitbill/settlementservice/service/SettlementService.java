@@ -9,9 +9,11 @@ public interface SettlementService {
 
     SettlementResponse createSettlement(SettlementCreateRequest request);
 
-    SettlementResponse getSettlementById(Long id);
+    SettlementResponse getSettlement(Long id);
 
-    List<SettlementResponse> getSettlementsByGroup(Long groupId);
+    List<SettlementResponse> getUserSettlements(Long userId);
 
-    List<SettlementResponse> getSettlementsByUser(Long userId);
+    List<SettlementResponse> getGroupSettlements(Long groupId);
+
+    SettlementResponse completeSettlement(Long id);
 }

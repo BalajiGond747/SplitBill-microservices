@@ -7,6 +7,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -21,4 +24,7 @@ public class GroupCreateRequest {
 
     @NotNull(message = "Created by is required")
     private Long createdBy;
+
+    @Size(max = 50, message = "A group cannot have more than 50 members")
+    private List<Long> memberUserIds = new ArrayList<>();
 }

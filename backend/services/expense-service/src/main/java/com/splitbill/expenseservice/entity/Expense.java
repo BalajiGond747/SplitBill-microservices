@@ -10,15 +10,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(
-        name = "expenses",
-        indexes = {
-                @Index(name = "idx_expenses_group_id", columnList = "group_id"),
-                @Index(name = "idx_expenses_paid_by", columnList = "paid_by"),
-                @Index(name = "idx_expenses_expense_date", columnList = "expense_date"),
-                @Index(name = "idx_expenses_split_type", columnList = "split_type")
-        }
-)
+@Table(name = "expenses", indexes = {@Index(name = "idx_expenses_group_id", columnList = "group_id"), @Index(name = "idx_expenses_paid_by", columnList = "paid_by"), @Index(name = "idx_expenses_expense_date", columnList = "expense_date"), @Index(name = "idx_expenses_split_type", columnList = "split_type")})
 @Getter
 @Setter
 @NoArgsConstructor
@@ -58,8 +50,6 @@ public class Expense {
     private LocalDateTime updatedAt;
 
     public enum SplitType {
-        EQUAL,
-        EXACT,
-        PERCENTAGE
+        EQUAL, EXACT, PERCENTAGE
     }
 }

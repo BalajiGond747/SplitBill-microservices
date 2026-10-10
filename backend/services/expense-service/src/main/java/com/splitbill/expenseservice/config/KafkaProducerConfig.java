@@ -20,23 +20,13 @@ public class KafkaProducerConfig {
 
         Map<String, Object> properties = new HashMap<>();
 
-        properties.put(
-                ProducerConfig.BOOTSTRAP_SERVERS_CONFIG,
-                "localhost:9092"
-        );
+        properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
 
-        properties.put(
-                ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG,
-                StringSerializer.class
-        );
+        properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
 
-        properties.put(
-                ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
-                JacksonJsonSerializer.class
-        );
+        properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JacksonJsonSerializer.class);
 
-        DefaultKafkaProducerFactory<String, ExpenseEvent> producerFactory =
-                new DefaultKafkaProducerFactory<>(properties);
+        DefaultKafkaProducerFactory<String, ExpenseEvent> producerFactory = new DefaultKafkaProducerFactory<>(properties);
 
         return new KafkaTemplate<>(producerFactory);
     }

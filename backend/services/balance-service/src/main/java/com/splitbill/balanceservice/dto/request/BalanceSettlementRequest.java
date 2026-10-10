@@ -1,6 +1,9 @@
-package com.splitbill.settlementservice.dto.request;
+package com.splitbill.balanceservice.dto.request;
 
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Digits;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -10,7 +13,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class SettlementCreateRequest {
+public class BalanceSettlementRequest {
 
     @NotNull(message = "Group id is required")
     @Positive(message = "Group id must be positive")
@@ -28,7 +31,4 @@ public class SettlementCreateRequest {
     @DecimalMin(value = "0.01", message = "Amount must be greater than zero")
     @Digits(integer = 17, fraction = 2, message = "Amount must have at most 17 integer digits and 2 decimal places")
     private BigDecimal amount;
-
-    @Size(max = 500, message = "Note must not exceed 500 characters")
-    private String note;
 }

@@ -53,7 +53,6 @@ class SettlementServiceImplTest {
                 .fromUserId(2L)
                 .toUserId(1L)
                 .amount(new BigDecimal("500.00"))
-                .note("Paid via cash")
                 .build();
 
         SettlementResponse response = SettlementResponse.builder()
@@ -62,24 +61,17 @@ class SettlementServiceImplTest {
                 .fromUserId(2L)
                 .toUserId(1L)
                 .amount(new BigDecimal("500.00"))
-                .note("Paid via cash")
                 .build();
 
-        when(settlementRepository.save(any(Settlement.class)))
-                .thenReturn(savedSettlement);
+        when(settlementRepository.save(any(Settlement.class))).thenReturn(savedSettlement);
 
-        when(settlementMapper.toResponse(savedSettlement))
-                .thenReturn(response);
+        when(settlementMapper.toResponse(savedSettlement)).thenReturn(response);
 
-        SettlementResponse result =
-                settlementService.createSettlement(request);
+        SettlementResponse result = settlementService.createSettlement(request);
 
         assertNotNull(result);
         assertEquals(1L, result.getId());
-        assertEquals(
-                new BigDecimal("500.00"),
-                result.getAmount()
-        );
+        assertEquals(new BigDecimal("500.00"), result.getAmount());
 
         verify(settlementRepository).save(any(Settlement.class));
         verify(settlementMapper).toResponse(savedSettlement);
@@ -90,12 +82,8 @@ class SettlementServiceImplTest {
 
         request.setToUserId(request.getFromUserId());
 
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> settlementService.createSettlement(request)
-        );
+        assertThrows(IllegalArgumentException.class, () -> settlementService.createSettlement(request));
 
-        verify(settlementRepository, never())
-                .save(any(Settlement.class));
+        verify(settlementRepository, never()).save(any(Settlement.class));
     }
 }

@@ -33,6 +33,9 @@ public class Balance {
     @Column(nullable = false, precision = 19, scale = 2)
     private BigDecimal amount;
 
+    @Column(name = "settled_amount", precision = 19, scale = 2)
+    private BigDecimal settledAmount;
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -40,4 +43,16 @@ public class Balance {
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+
+    public BigDecimal getSettledAmountOrZero() {
+        return settledAmount == null ? BigDecimal.ZERO : settledAmount;
+    }
+
+    public BigDecimal getOutstandingAmount() {
+
+        BigDecimal gross = amount == null ? BigDecimal.ZERO : amount;
+
+        return gross.subtract(getSettledAmountOrZero())
+                .max(BigDecimal.ZERO);
+    }
 }

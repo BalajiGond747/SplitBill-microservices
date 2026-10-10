@@ -5,8 +5,10 @@ import com.splitbill.groupservice.dto.request.GroupUpdateRequest;
 import com.splitbill.groupservice.dto.response.GroupResponse;
 import com.splitbill.groupservice.dto.response.PageResponse;
 import com.splitbill.groupservice.entity.Group;
+import com.splitbill.groupservice.entity.GroupParticipant;
 import com.splitbill.groupservice.exception.ResourceNotFoundException;
 import com.splitbill.groupservice.mapper.GroupMapper;
+import com.splitbill.groupservice.repository.GroupParticipantRepository;
 import com.splitbill.groupservice.repository.GroupRepository;
 import com.splitbill.groupservice.service.GroupService;
 import lombok.RequiredArgsConstructor;
@@ -17,26 +19,51 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class GroupServiceImpl implements GroupService {
 
     private final GroupRepository groupRepository;
+    private final GroupParticipantRepository participantRepository;
     private final GroupMapper groupMapper;
 
     @Override
     @Transactional
     public GroupResponse createGroup(GroupCreateRequest request) {
+
         Group group = groupMapper.toEntity(request);
 
         Group savedGroup = groupRepository.save(group);
+
+        Set<Long> memberIds = new LinkedHashSet<>();
+
+        memberIds.add(request.getCreatedBy());
+
+        if (request.getMemberUserIds() != null) {
+            memberIds.addAll(request.getMemberUserIds());
+        }
+
+        for (Long userId : memberIds) {
+
+            GroupParticipant participant = GroupParticipant.builder()
+                    .groupId(savedGroup.getId())
+                    .userId(userId)
+                    .active(true)
+                    .build();
+
+            participantRepository.save(participant);
+        }
 
         return groupMapper.toResponse(savedGroup);
     }
 
     @Override
     public GroupResponse getGroupById(Long id) {
+
         Group group = findGroupById(id);
 
         return groupMapper.toResponse(group);
@@ -98,6 +125,7 @@ public class GroupServiceImpl implements GroupService {
     @Override
     @Transactional
     public void deactivateGroup(Long id) {
+
         Group group = findGroupById(id);
 
         group.setActive(false);
@@ -108,6 +136,7 @@ public class GroupServiceImpl implements GroupService {
     @Override
     @Transactional
     public void activateGroup(Long id) {
+
         Group group = findGroupById(id);
 
         group.setActive(true);
@@ -116,6 +145,7 @@ public class GroupServiceImpl implements GroupService {
     }
 
     private Group findGroupById(Long id) {
+
         return groupRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Group not found with id: " + id));
     }
@@ -134,6 +164,8 @@ public class GroupServiceImpl implements GroupService {
         return new PageResponse<>(groupPage.getContent()
                 .stream()
                 .map(groupMapper::toResponse)
-                .toList(), groupPage.getNumber(), groupPage.getSize(), groupPage.getTotalElements(), groupPage.getTotalPages(), groupPage.isFirst(), groupPage.isLast());
+                .toList(),
+
+                groupPage.getNumber(), groupPage.getSize(), groupPage.getTotalElements(), groupPage.getTotalPages(), groupPage.isFirst(), groupPage.isLast());
     }
 }
