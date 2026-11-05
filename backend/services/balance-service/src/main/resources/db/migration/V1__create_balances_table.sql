@@ -9,6 +9,8 @@ CREATE TABLE balances (
 
                           amount DECIMAL(19, 2) NOT NULL,
 
+                          settled_amount DECIMAL(19, 2),
+
                           created_at DATETIME(6) NOT NULL,
 
                           updated_at DATETIME(6) NOT NULL,

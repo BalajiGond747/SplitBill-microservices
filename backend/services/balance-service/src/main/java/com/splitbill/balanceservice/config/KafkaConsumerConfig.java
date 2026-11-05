@@ -19,13 +19,12 @@ public class KafkaConsumerConfig {
 
     @Bean
     public ConsumerFactory<String, ExpenseEvent> expenseEventConsumerFactory() {
-
         Map<String, Object> properties = new HashMap<>();
 
-        properties.put("bootstrap.servers", "localhost:9092");
+        properties.put("bootstrap.servers", System.getenv()
+                .getOrDefault("KAFKA_BOOTSTRAP_SERVERS", "localhost:9092"));
 
         properties.put("group.id", "balance-service");
-
         properties.put("auto.offset.reset", "earliest");
 
         JacksonJsonDeserializer<ExpenseEvent> deserializer = new JacksonJsonDeserializer<>(ExpenseEvent.class, false);
@@ -35,7 +34,6 @@ public class KafkaConsumerConfig {
 
     @Bean
     public ConcurrentKafkaListenerContainerFactory<String, ExpenseEvent> expenseEventKafkaListenerContainerFactory(ConsumerFactory<String, ExpenseEvent> consumerFactory) {
-
         ConcurrentKafkaListenerContainerFactory<String, ExpenseEvent> factory = new ConcurrentKafkaListenerContainerFactory<>();
 
         factory.setConsumerFactory(consumerFactory);

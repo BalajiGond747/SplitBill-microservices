@@ -17,10 +17,10 @@ public class KafkaProducerConfig {
 
     @Bean
     public KafkaTemplate<String, ExpenseEvent> kafkaTemplate() {
-
         Map<String, Object> properties = new HashMap<>();
 
-        properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+        properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, System.getenv()
+                .getOrDefault("KAFKA_BOOTSTRAP_SERVERS", "localhost:9092"));
 
         properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
 
